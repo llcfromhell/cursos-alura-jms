@@ -1,0 +1,3 @@
+https://s3.amazonaws.com/caelum-online-public/jms/apache-activemq-5.12.0-bin.zip
+
+https://s3.amazonaws.com/caelum-online-public/jms/aula-jms.jar

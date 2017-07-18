@@ -11,10 +11,11 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.naming.InitialContext;
 
-public class TesteConsumidor {
-	
+public class TesteConsumidorTopicoEstoque {
+
 	public static void main(String[] args) throws Exception{
 
         InitialContext context = new InitialContext(); 
@@ -22,19 +23,18 @@ public class TesteConsumidor {
         //imports do package javax.jms
         ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
         Connection connection = factory.createConnection();
+        connection.setClientID("estoque");
         connection.start();
 
-        
-
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination fila = (Destination) context.lookup("financeiro");
-        MessageConsumer consumer = session.createConsumer(fila);
+        Destination topico = (Destination) context.lookup("loja");
+        MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign");
 
         consumer.setMessageListener(new MessageListener(){
 
             @Override
             public void onMessage(Message message){
-            	TextMessage textMessage  = (TextMessage)message;
+            	TextMessage textMessage  = (TextMessage) message;
                 try{
                     System.out.println(textMessage.getText());
                 } catch(JMSException e){
@@ -44,8 +44,6 @@ public class TesteConsumidor {
 
         });
         
-        //Message message = consumer.receive();
-        
         new Scanner(System.in).nextLine(); //parar o programa para testar a conexao
 
         session.close();
@@ -53,5 +51,5 @@ public class TesteConsumidor {
         connection.close();
         context.close();
 	}
-
+	
 }

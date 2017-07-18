@@ -11,8 +11,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 
-public class TesteProdutor {
-
+public class TesteProdutorTopico {
+	
 	public static void main(String args[]) throws Exception {
 
 //		InitialContext context = new InitialContext();
@@ -31,14 +31,14 @@ public class TesteProdutor {
 		connection.start();
 		
 		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		Destination fila = (Destination) context.lookup("financeiro");
+		Destination topico = (Destination) context.lookup("loja");
 
-		MessageProducer producer = session.createProducer(fila);
+		MessageProducer producer = session.createProducer(topico);
 
 		String msgFmtStr = "<pedido><id>{0}</id></pedido>";
 		MessageFormat msgFmt = new MessageFormat(msgFmtStr);
 		
-		for (int i = 1; i <= 1000; i++) {
+		for (int i = 1; i <= 2; i++) {
 			
 			Message message = session.createTextMessage(msgFmt.format(new Object[] {i}));
 //			Message message = session.createTextMessage("<pedido><id>" + i + "</id></pedido>");

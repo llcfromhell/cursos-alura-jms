@@ -1,4 +1,4 @@
-package br.com.alura.jms;
+package br.com.alura.jms.seletor;
 
 import java.util.Scanner;
 
@@ -14,7 +14,7 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.naming.InitialContext;
 
-public class TesteConsumidorTopicoComercial {
+public class TesteConsumidorTopicoEstoqueSeletor {
 
 	public static void main(String[] args) throws Exception{
 
@@ -23,13 +23,16 @@ public class TesteConsumidorTopicoComercial {
         //imports do package javax.jms
         ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
         Connection connection = factory.createConnection();
-        connection.setClientID("comercial");
+        connection.setClientID("estoque-seletor");
         connection.start();
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination topico = (Destination) context.lookup("loja");
-        MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign-comercial");
-
+        
+        String selectorStr = "ebook = false";
+        
+        MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign selector", selectorStr, false);
+        
         consumer.setMessageListener(new MessageListener(){
 
             @Override

@@ -1,4 +1,4 @@
-package br.com.alura.jms;
+package br.com.alura.jms.seletor;
 
 import java.util.Scanner;
 
@@ -14,22 +14,24 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.naming.InitialContext;
 
-public class TesteConsumidorTopicoEstoque {
+import br.com.alura.jms.factory.ConnectionFactoryHelper;
+import br.com.alura.jms.factory.ContextFactory;
+import br.com.alura.jms.factory.SessionFactory;
+
+public class TesteConsumidorTopicoEstoqueSeletor2 {
 
 	public static void main(String[] args) throws Exception{
 
-        InitialContext context = new InitialContext(); 
-
-        //imports do package javax.jms
-        ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-        Connection connection = factory.createConnection();
-        connection.setClientID("estoque");
-        connection.start();
-
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		InitialContext context = ContextFactory.createContext();
+		Connection connection = ConnectionFactoryHelper.createConnectionFrom(context, "estoque-seletor-2");
+		Session session = SessionFactory.createSessionFrom(connection);
+		
         Destination topico = (Destination) context.lookup("loja");
-        MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign");
-
+        
+        String selectorStr = "ebook = true OR ebook IS NULL";
+        
+        MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign selector 2", selectorStr, false);
+        
         consumer.setMessageListener(new MessageListener(){
 
             @Override

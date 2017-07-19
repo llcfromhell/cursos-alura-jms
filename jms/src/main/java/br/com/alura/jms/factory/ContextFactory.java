@@ -14,6 +14,7 @@ public abstract class ContextFactory {
 
 		properties.setProperty("java.naming.provider.url", "tcp://localhost:61616");
 		properties.setProperty("queue.financeiro", "fila.financeiro");
+		properties.setProperty("topic.loja", "topico.loja");
 
 		return new InitialContext(properties);
 		

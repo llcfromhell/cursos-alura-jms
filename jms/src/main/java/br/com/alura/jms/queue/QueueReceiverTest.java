@@ -1,4 +1,4 @@
-package br.com.alura.jms;
+package br.com.alura.jms.queue;
 
 import javax.jms.Message;
 import java.util.Scanner;

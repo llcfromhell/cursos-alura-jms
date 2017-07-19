@@ -1,4 +1,4 @@
-package br.com.alura.jms;
+package br.com.alura.jms.queue;
 
 import java.text.MessageFormat;
 import java.util.Properties;

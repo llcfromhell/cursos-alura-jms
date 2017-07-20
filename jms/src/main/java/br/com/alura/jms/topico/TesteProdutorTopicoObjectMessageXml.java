@@ -16,7 +16,7 @@ import br.com.alura.jms.factory.SessionFactory;
 import br.com.caelum.modelo.Pedido;
 import br.com.caelum.modelo.PedidoFactory;
 
-public class TesteProdutorTopicoObjectMessage {
+public class TesteProdutorTopicoObjectMessageXml {
 	
 	public static void main(String args[]) throws Exception {
 
@@ -31,9 +31,11 @@ public class TesteProdutorTopicoObjectMessage {
 
 			Pedido pedido = new PedidoFactory().geraPedidoComValores();
 
-			Message message = session.createObjectMessage(pedido);
-			
-			System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+			StringWriter writer = new StringWriter();
+			JAXB.marshal(pedido, writer);
+			String xml = writer.toString();
+
+			Message message = session.createTextMessage(xml);
 			
 			producer.send(message);
 			

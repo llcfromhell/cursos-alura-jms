@@ -11,6 +11,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 
+import br.com.alura.jms.factory.ConnectionFactoryHelper;
+
 public class TesteProdutorFila {
 
 	public static void main(String args[]) throws Exception {
@@ -26,8 +28,7 @@ public class TesteProdutorFila {
 		InitialContext context = new InitialContext(properties);
 		
 		// imports do package javax.jms
-		ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-		Connection connection = factory.createConnection();
+		Connection connection = ConnectionFactoryHelper.createConnectionFrom(context, null, "admin", "senha");
 		connection.start();
 		
 		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -38,12 +39,15 @@ public class TesteProdutorFila {
 		String msgFmtStr = "<pedido><id>{0}</id></pedido>";
 		MessageFormat msgFmt = new MessageFormat(msgFmtStr);
 		
-		for (int i = 1; i <= 1000; i++) {
+		for (int i = 1; i <= 2; i++) {
 			
 			Message message = session.createTextMessage(msgFmt.format(new Object[] {i}));
 //			Message message = session.createTextMessage("<pedido><id>" + i + "</id></pedido>");
 			producer.send(message);
 		}
+		
+		Message message = session.createTextMessage("");
+		producer.send(message);
 		
 		session.close();
 		connection.close();

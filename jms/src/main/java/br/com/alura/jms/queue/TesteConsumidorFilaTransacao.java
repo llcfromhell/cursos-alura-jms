@@ -13,16 +13,19 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 
+import org.springframework.util.StringUtils;
+
 import br.com.alura.jms.factory.ConnectionFactoryHelper;
 import br.com.alura.jms.factory.ContextFactory;
 
-public class TesteConsumidorFilaAutorizacao {
+public class TesteConsumidorFilaTransacao {
 	
 	public static void main(String[] args) throws Exception{
 
         InitialContext context = ContextFactory.createContext();
         Connection connection = ConnectionFactoryHelper.createConnectionFrom(context, null, "admin", "senha");
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        
+        Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
         
         try {
 			Destination fila = (Destination) context.lookup("financeiro");
@@ -32,9 +35,23 @@ public class TesteConsumidorFilaAutorizacao {
 
 			    @Override
 			    public void onMessage(Message message){
-			    	TextMessage textMessage  = (TextMessage)message;
+			    	TextMessage textMessage  = (TextMessage) message;
 			        try{
-			            System.out.println(textMessage.getText());
+			        	
+			        	System.out.println("---");
+			        	System.out.println("Message found: " + message.toString());
+			        	System.out.println("Message TEXT: " + textMessage.getText());
+			            
+			            if (StringUtils.isEmpty(textMessage.getText())) {
+			            	session.rollback();
+			            	System.out.println("Empty message, rollback fired.");
+			            } else {
+			            	session.commit();
+			            	System.out.println("Message processed!");
+			            }
+			            
+			            System.out.println("--- END");
+			            
 			        } catch(JMSException e){
 			            e.printStackTrace();
 			        }

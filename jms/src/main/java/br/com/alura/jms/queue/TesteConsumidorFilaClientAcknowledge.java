@@ -1,4 +1,4 @@
-package br.com.alura.jms.topico;
+package br.com.alura.jms.queue;
 
 import java.util.Scanner;
 
@@ -11,52 +11,50 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.jms.Topic;
 import javax.naming.InitialContext;
 
 import br.com.alura.jms.factory.ConnectionFactoryHelper;
 import br.com.alura.jms.factory.ContextFactory;
-import br.com.alura.jms.factory.SessionFactory;
 
-public class TesteConsumidorTopicoEstoqueAutorizacao {
-
+public class TesteConsumidorFilaClientAcknowledge {
+	
 	public static void main(String[] args) throws Exception{
 
-		InitialContext context = ContextFactory.createContext();
-		Connection connection = ConnectionFactoryHelper.createConnectionFrom(context, null, "admin", "senha");
-		Session session = SessionFactory.createSessionFrom(connection);
-		
+        InitialContext context = ContextFactory.createContext();
+        Connection connection = ConnectionFactoryHelper.createConnectionFrom(context, null, "admin", "senha");
+        
+        Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+        
         try {
-			Destination topico = (Destination) context.lookup("loja");
-			MessageConsumer consumer = session.createDurableSubscriber( (Topic) topico, "sign");
+			Destination fila = (Destination) context.lookup("financeiro");
+			MessageConsumer consumer = session.createConsumer(fila);
 
 			consumer.setMessageListener(new MessageListener(){
 
 			    @Override
 			    public void onMessage(Message message){
-			    	TextMessage textMessage  = (TextMessage) message;
+			    	TextMessage textMessage  = (TextMessage)message;
 			        try{
 			            System.out.println(textMessage.getText());
+			            message.acknowledge();
 			        } catch(JMSException e){
 			            e.printStackTrace();
 			        }
 			    }
 
 			});
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
 			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		} finally {
 			new Scanner(System.in).nextLine(); //parar o programa para testar a conexao
-
-	        session.close();
-	        
+			session.close();
 	        connection.close();
 	        context.close();
 		}
-        
-        
+
 	}
-	
+
 }

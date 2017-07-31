@@ -24,8 +24,6 @@ public class TesteConsumidorFila {
         Connection connection = factory.createConnection();
         connection.start();
 
-        
-
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination fila = (Destination) context.lookup("financeiro");
         MessageConsumer consumer = session.createConsumer(fila);

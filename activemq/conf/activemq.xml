@@ -44,6 +44,7 @@
             <simpleAuthenticationPlugin anonymousAccessAllowed="false">
                 <users>
                     <authenticationUser username="admin" password="senha" groups="users,admins"/>
+					<authenticationUser username="system" password="" groups="users,admins"/>
                     <authenticationUser username="user" password="senha" groups="users"/>
                     <authenticationUser username="guest" password="senha" groups="guests"/>
                 </users>
@@ -55,8 +56,9 @@
                     <authorizationMap>
                         
                         <authorizationEntries>
-                            <authorizationEntry queue="fila.financeiro" read="users" write="users" admin="users,admins" />
-                            <authorizationEntry topic="topico.loja" read="users" write="users" admin="users,admins" />
+                            <authorizationEntry queue="fila.log" read="admins" write="admins" admin="admins" />
+							<authorizationEntry queue="fila.financeiro" read="users" write="users" admin="users,admins" />
+							<authorizationEntry topic="topico.loja" read="users" write="users" admin="users,admins" />
                             <authorizationEntry topic="ActiveMQ.Advisory.>" read="users,admins" write="users,admins" admin="users,admins"/>
                         </authorizationEntries>
 
@@ -72,6 +74,7 @@
         <destinationPolicy>
             <policyMap>
               <policyEntries>
+			  <policyEntry queue=">" prioritizedMessages="true"/>
                 <policyEntry topic=">" >
                     <!-- The constantPendingMessageLimitStrategy is used to prevent
                          slow topic consumers to block producers and affect other consumers
@@ -85,6 +88,9 @@
                     <constantPendingMessageLimitStrategy limit="1000"/>
                   </pendingMessageLimitStrategy>
                 </policyEntry>
+				
+				
+				
               </policyEntries>
             </policyMap>
         </destinationPolicy>
